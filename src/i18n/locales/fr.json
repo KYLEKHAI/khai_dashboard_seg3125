@@ -1,0 +1,32 @@
+{
+  "title": "Tableau de Bord Bitcoin Bytes",
+  "subtitle": "Votre façon simple de suivre Bitcoin",
+  "currentPrice": "Prix",
+  "priceChange24h": "Changement 24h",
+  "marketCap": "Capitalisation Boursière",
+  "volume24h": "Volume 24h",
+  "priceHistory": "Historique des Prix Bitcoin",
+  "tradingVolume": "Volume de Trading (7 Derniers Jours)",
+  "marketCapitalization": "Capitalisation Boursière (7 Derniers Jours)",
+  "timeframes": {
+    "7d": "7 Jours",
+    "1m": "1 Mois",
+    "1y": "1 Année"
+  },
+  "currencies": {
+    "cad": "CAD",
+    "usd": "USD"
+  },
+  "chartTypes": {
+    "volume": "Volume",
+    "marketCap": "Cap. Boursière"
+  },
+  "language": "Langue",
+  "currency": "Devise",
+  "days": "Jours",
+  "months": "Mois",
+  "year": "Année",
+  "circulatingSupply": "Offre Circulante",
+  "maxSupply": "Offre Max",
+  "dominance": "Dominance"
+}

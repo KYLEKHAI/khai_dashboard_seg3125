@@ -1,0 +1,32 @@
+{
+  "title": "Bitcoin Bytes Dashboard",
+  "subtitle": "Your simple way to track Bitcoin",
+  "currentPrice": "Price",
+  "priceChange24h": "24h Change",
+  "marketCap": "Market Cap",
+  "volume24h": "24h Volume",
+  "priceHistory": "Bitcoin Price History",
+  "tradingVolume": "Trading Volume (Last 7 Days)",
+  "marketCapitalization": "Market Capitalization (Last 7 Days)",
+  "timeframes": {
+    "7d": "7 Days",
+    "1m": "1 Month",
+    "1y": "1 Year"
+  },
+  "currencies": {
+    "cad": "CAD",
+    "usd": "USD"
+  },
+  "chartTypes": {
+    "volume": "Volume",
+    "marketCap": "Market Cap"
+  },
+  "language": "Language",
+  "currency": "Currency",
+  "days": "Days",
+  "months": "Months",
+  "year": "Year",
+  "circulatingSupply": "Circulating Supply",
+  "maxSupply": "Max Supply",
+  "dominance": "Dominance"
+}
