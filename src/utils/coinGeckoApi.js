@@ -1,4 +1,7 @@
-const API_BASE_URL = "/api/coingecko";
+// Use different base URLs for development vs production
+const API_BASE_URL = import.meta.env.DEV
+  ? "/api/coingecko"
+  : "https://api.coingecko.com/api/v3";
 
 const CURRENCY_MAP = {
   USD: "usd",
