@@ -1,32 +1,51 @@
 {
   "title": "Tableau de Bord Bitcoin Bytes",
   "subtitle": "Votre façon simple de suivre Bitcoin",
-  "currentPrice": "Prix",
+  "currentPrice": "Cours",
   "priceChange24h": "Changement 24h",
-  "marketCap": "Capitalisation Boursière",
-  "volume24h": "Volume 24h",
-  "priceHistory": "Historique des Prix Bitcoin",
-  "tradingVolume": "Volume de Trading (7 Derniers Jours)",
-  "marketCapitalization": "Capitalisation Boursière (7 Derniers Jours)",
+  "marketCap": "Capitalisation boursière",
+  "volume24h": "Volume de négociation sur 24 h",
+  "priceHistory": "Cours du Bitcoin",
+  "tradingVolume": "Volume de négociation (7 derniers jours)",
+  "marketCapitalization": "Capitalisation boursière (7 derniers jours)",
   "timeframes": {
-    "7d": "7 Jours",
-    "1m": "1 Mois",
-    "1y": "1 Année"
+    "1H": "1h",
+    "1D": "24h",
+    "7D": "7j",
+    "1M": "1m",
+    "1Y": "1a",
+    "ALL": "Max"
   },
   "currencies": {
-    "cad": "CAD",
-    "usd": "USD"
+    "cad": "CAD - Dollar canadien",
+    "usd": "USD - Dollar américain"
   },
   "chartTypes": {
     "volume": "Volume",
-    "marketCap": "Cap. Boursière"
+    "marketCap": "Capitalisation boursière"
+  },
+  "chartStyles": {
+    "line": "Ligne",
+    "area": "Zone",
+    "bar": "Barres"
   },
   "language": "Langue",
-  "currency": "Devise",
+  "currency": "Monnaie",
   "days": "Jours",
   "months": "Mois",
   "year": "Année",
-  "circulatingSupply": "Offre Circulante",
-  "maxSupply": "Offre Max",
-  "dominance": "Dominance"
+  "circulatingSupply": "Offre en circulation",
+  "maxSupply": "Offre maximale",
+  "dominance": "Dominance",
+  "liveChart": "Graphique Bitcoin en direct (CoinGecko)",
+  "settings": "Paramètres",
+  "loading": "Chargement...",
+  "lastUpdated": "Dernière mise à jour",
+  "languages": {
+    "en": "English",
+    "fr": "Français"
+  },
+  "disclaimer": {
+    "aiGenerated": "Avertissement : Toutes les données graphiques sont générées par IA, sauf la section titre du haut qui utilise l'API CoinGecko."
+  }
 }

@@ -53,16 +53,45 @@ import {
   generateMarketCapData,
   getCurrentStats,
 } from "../utils/bitcoinData";
+import { fetchBitcoinData } from "../utils/coinGeckoApi";
 
 const Dashboard = () => {
   const { t, i18n } = useTranslation();
   const [currency, setCurrency] = useState("CAD");
   const [timeframe, setTimeframe] = useState("1D");
   const [chartType, setChartType] = useState("price");
-  const [chartStyle, setChartStyle] = useState("line");
+  const [chartStyle, setChartStyle] = useState("area");
   const [stats, setStats] = useState({});
   const [chartData, setChartData] = useState([]);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [usingFallbackData, setUsingFallbackData] = useState(false);
+
+  useEffect(() => {
+    const fetchRealData = async () => {
+      try {
+        setLoading(true);
+        const realStats = await fetchBitcoinData(currency);
+        setStats(realStats);
+        setUsingFallbackData(false);
+      } catch (error) {
+        console.error(
+          "Failed to fetch real Bitcoin data, using fallback:",
+          error
+        );
+        setStats(getCurrentStats(currency));
+        setUsingFallbackData(true);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchRealData();
+
+    const interval = setInterval(fetchRealData, 300000);
+
+    return () => clearInterval(interval);
+  }, [currency]);
 
   useEffect(() => {
     const days =
@@ -71,21 +100,20 @@ const Dashboard = () => {
         "1D": 1,
         "7D": 7,
         "1M": 30,
-        "3M": 90,
         "1Y": 365,
         ALL: 365 * 3,
       }[timeframe] || 7;
 
-    setStats(getCurrentStats(currency));
-
     if (chartType === "price") {
-      setChartData(generatePriceData(days, currency));
+      setChartData(
+        generatePriceData(days, currency, timeframe, stats.currentPrice)
+      );
     } else if (chartType === "volume") {
-      setChartData(generateVolumeData(currency));
+      setChartData(generateVolumeData(currency, i18n.language, timeframe));
     } else {
-      setChartData(generateMarketCapData(currency));
+      setChartData(generateMarketCapData(currency, i18n.language, timeframe));
     }
-  }, [currency, timeframe, chartType]);
+  }, [timeframe, chartType, i18n.language, stats.currentPrice]);
 
   const handleLanguageChange = (event) => {
     i18n.changeLanguage(event.target.value);
@@ -114,7 +142,8 @@ const Dashboard = () => {
 
   const formatBillion = (value, curr = currency) => {
     if (value >= 1000) {
-      return `${formatCurrency(value / 1000, curr)}T`;
+      const trillions = Math.floor(value / 1000);
+      return `${formatCurrency(trillions, curr)}T`;
     }
     return `${formatCurrency(value, curr)}B`;
   };
@@ -129,13 +158,12 @@ const Dashboard = () => {
   };
 
   const timeframes = [
-    { key: "1H", label: "1H" },
-    { key: "1D", label: "1D" },
-    { key: "7D", label: "7D" },
-    { key: "1M", label: "1M" },
-    { key: "3M", label: "3M" },
-    { key: "1Y", label: "1Y" },
-    { key: "ALL", label: "ALL" },
+    { key: "1H", label: t("timeframes.1H") },
+    { key: "1D", label: t("timeframes.1D") },
+    { key: "7D", label: t("timeframes.7D") },
+    { key: "1M", label: t("timeframes.1M") },
+    { key: "1Y", label: t("timeframes.1Y") },
+    { key: "ALL", label: t("timeframes.ALL") },
   ];
 
   const chartTypes = [
@@ -163,60 +191,12 @@ const Dashboard = () => {
         ? "#3861fb"
         : "#ffa726";
 
-    if (chartStyle === "line") {
+    if (chartStyle === "area") {
       return (
-        <LineChart data={chartData}>
-          <defs>
-            <linearGradient id="colorGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor={color} stopOpacity={0.3} />
-              <stop offset="95%" stopColor={color} stopOpacity={0} />
-            </linearGradient>
-          </defs>
-          <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-          <XAxis
-            dataKey={chartType === "price" ? "formattedDate" : "day"}
-            tick={{ fontSize: 12, fill: "#666" }}
-            axisLine={false}
-            tickLine={false}
-          />
-          <YAxis
-            tick={{ fontSize: 12, fill: "#666" }}
-            axisLine={false}
-            tickLine={false}
-            tickFormatter={(value) =>
-              chartType === "price"
-                ? formatCurrency(value)
-                : formatBillion(value)
-            }
-          />
-          <RechartsTooltip
-            formatter={(value) => [
-              chartType === "price"
-                ? formatCurrency(value)
-                : formatBillion(value),
-              chartTypes.find((ct) => ct.key === chartType)?.label,
-            ]}
-            labelFormatter={(label) => label}
-            contentStyle={{
-              backgroundColor: "#fff",
-              border: "1px solid #e0e0e0",
-              borderRadius: "8px",
-              boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-            }}
-          />
-          <Line
-            type="monotone"
-            dataKey={dataKey}
-            stroke={color}
-            strokeWidth={2}
-            dot={false}
-            activeDot={{ r: 4, stroke: color, strokeWidth: 2, fill: "#fff" }}
-          />
-        </LineChart>
-      );
-    } else if (chartStyle === "area") {
-      return (
-        <AreaChart data={chartData}>
+        <AreaChart
+          data={chartData}
+          margin={{ top: 20, right: 30, left: 80, bottom: 20 }}
+        >
           <defs>
             <linearGradient id="colorGradient" x1="0" y1="0" x2="0" y2="1">
               <stop offset="5%" stopColor={color} stopOpacity={0.3} />
@@ -265,7 +245,10 @@ const Dashboard = () => {
       );
     } else {
       return (
-        <BarChart data={chartData}>
+        <BarChart
+          data={chartData}
+          margin={{ top: 20, right: 30, left: 80, bottom: 20 }}
+        >
           <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
           <XAxis
             dataKey={chartType === "price" ? "formattedDate" : "day"}
@@ -320,8 +303,36 @@ const Dashboard = () => {
 
   return (
     <Container maxWidth={false} sx={{ py: 2, px: 2, minHeight: "100vh" }}>
+      {/* AI Data Disclaimer */}
+      <Box
+        sx={{
+          position: "absolute",
+          top: 16,
+          left: 16,
+          zIndex: 1000,
+          backgroundColor: "#fff8dc",
+          border: "2px solid #f4d03f",
+          borderRadius: "8px",
+          padding: "12px 16px",
+          maxWidth: "280px",
+          boxShadow: "0 2px 8px rgba(244, 208, 63, 0.15)",
+        }}
+      >
+        <Typography
+          variant="body2"
+          sx={{
+            fontWeight: 600,
+            color: "#b7950b",
+            fontSize: "0.75rem",
+            lineHeight: 1.4,
+          }}
+        >
+          {t("disclaimer.aiGenerated")}
+        </Typography>
+      </Box>
+
       <Box sx={{ position: "absolute", top: 16, right: 16, zIndex: 1000 }}>
-        <Tooltip title="Settings">
+        <Tooltip title={t("settings")}>
           <IconButton onClick={handleSettingsOpen} size="large">
             <SettingsIcon />
           </IconButton>
@@ -348,7 +359,7 @@ const Dashboard = () => {
               }}
             >
               <Typography variant="h6" component="h2">
-                Settings
+                {t("settings")}
               </Typography>
               <IconButton onClick={handleSettingsClose} size="small">
                 <CloseIcon />
@@ -366,23 +377,23 @@ const Dashboard = () => {
                     <LanguageIcon sx={{ mr: 1, color: "text.secondary" }} />
                   }
                 >
-                  <MenuItem value="en">English</MenuItem>
-                  <MenuItem value="fr">Français</MenuItem>
+                  <MenuItem value="en">{t("languages.en")}</MenuItem>
+                  <MenuItem value="fr">{t("languages.fr")}</MenuItem>
                 </Select>
               </FormControl>
 
               <FormControl fullWidth>
-                <InputLabel>Currency</InputLabel>
+                <InputLabel>{t("currency")}</InputLabel>
                 <Select
                   value={currency}
                   onChange={handleCurrencyChange}
-                  label="Currency"
+                  label={t("currency")}
                   startAdornment={
                     <AttachMoneyIcon sx={{ mr: 1, color: "text.secondary" }} />
                   }
                 >
-                  <MenuItem value="CAD">CAD - Canadian Dollar</MenuItem>
-                  <MenuItem value="USD">USD - US Dollar</MenuItem>
+                  <MenuItem value="CAD">{t("currencies.cad")}</MenuItem>
+                  <MenuItem value="USD">{t("currencies.usd")}</MenuItem>
                 </Select>
               </FormControl>
             </Stack>
@@ -419,26 +430,64 @@ const Dashboard = () => {
               flexWrap: "wrap",
             }}
           >
-            <Typography variant="h3" sx={{ fontWeight: 700 }}>
-              {formatCurrency(stats.currentPrice)}
+            <Typography
+              variant="h3"
+              sx={{ fontWeight: 700, opacity: loading ? 0.6 : 1 }}
+            >
+              {loading
+                ? t("loading") || "Loading..."
+                : formatCurrency(stats.currentPrice)}
             </Typography>
-            <Chip
-              label={priceChange.value}
-              sx={{
-                backgroundColor: priceChange.isPositive ? "#e8f5e8" : "#ffebee",
-                color: priceChange.color,
-                fontWeight: 600,
-                fontSize: "0.875rem",
-              }}
-              icon={
-                priceChange.isPositive ? (
-                  <TrendingUpIcon sx={{ color: priceChange.color }} />
-                ) : (
-                  <TrendingDownIcon sx={{ color: priceChange.color }} />
-                )
-              }
-            />
+            {!loading && (
+              <Chip
+                label={priceChange.value}
+                sx={{
+                  backgroundColor: priceChange.isPositive
+                    ? "#e8f5e8"
+                    : "#ffebee",
+                  color: priceChange.color,
+                  fontWeight: 600,
+                  fontSize: "0.875rem",
+                }}
+                icon={
+                  priceChange.isPositive ? (
+                    <TrendingUpIcon sx={{ color: priceChange.color }} />
+                  ) : (
+                    <TrendingDownIcon sx={{ color: priceChange.color }} />
+                  )
+                }
+              />
+            )}
           </Box>
+          {!loading && stats.lastUpdated && (
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 1,
+                mt: 1,
+              }}
+            >
+              <Typography variant="caption" color="text.secondary">
+                {t("lastUpdated")}:{" "}
+                {new Date(stats.lastUpdated).toLocaleTimeString()}
+              </Typography>
+              {usingFallbackData && (
+                <Chip
+                  label="Simulated Data"
+                  size="small"
+                  sx={{
+                    fontSize: "0.65rem",
+                    height: "20px",
+                    backgroundColor: "#fff3cd",
+                    color: "#856404",
+                    "& .MuiChip-label": { px: 1 },
+                  }}
+                />
+              )}
+            </Box>
+          )}
         </Box>
 
         <Grid container spacing={2} sx={{ mb: 3, justifyContent: "center" }}>
@@ -491,7 +540,7 @@ const Dashboard = () => {
               }}
             >
               <Typography variant="body2" color="text.secondary" gutterBottom>
-                Circulating Supply
+                {t("circulatingSupply")}
               </Typography>
               <Typography variant="h6" sx={{ fontWeight: 600 }}>
                 19.89M BTC
@@ -511,7 +560,7 @@ const Dashboard = () => {
               }}
             >
               <Typography variant="body2" color="text.secondary" gutterBottom>
-                Max Supply
+                {t("maxSupply")}
               </Typography>
               <Typography variant="h6" sx={{ fontWeight: 600 }}>
                 21M BTC
@@ -567,13 +616,6 @@ const Dashboard = () => {
 
             <ButtonGroup size="small" variant="outlined">
               <Button
-                variant={chartStyle === "line" ? "contained" : "outlined"}
-                onClick={() => setChartStyle("line")}
-                size="small"
-              >
-                <ShowChartIcon fontSize="small" />
-              </Button>
-              <Button
                 variant={chartStyle === "area" ? "contained" : "outlined"}
                 onClick={() => setChartStyle("area")}
                 size="small"
@@ -614,7 +656,7 @@ const Dashboard = () => {
           </Box>
         </Box>
 
-        <Box sx={{ height: 600, px: 3, pb: 3 }}>
+        <Box sx={{ height: 600, px: 3, pb: 3, mx: "auto", maxWidth: "85%" }}>
           <ResponsiveContainer width="100%" height="100%">
             {renderChart()}
           </ResponsiveContainer>
