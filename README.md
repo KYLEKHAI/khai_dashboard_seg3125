@@ -1,6 +1,6 @@
 # khai_dashboard_seg3125
 
-Interactive Dashboard site showcase for SEG3125 | Bitcoin (BTC) Dashboard
+Interactive Dashboard site showcase for SEG3125 | Bitcoin Bytes Dashboard
 
 Access the site here: https://khaidashboardseg3125.netlify.app/
 
