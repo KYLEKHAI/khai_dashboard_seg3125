@@ -3,6 +3,34 @@ const EXCHANGE_RATES = {
   CAD: 1.41,
 };
 
+const capitalizeFrenchDate = (str) => {
+  if (!str) return str;
+
+  const frenchMonths = {
+    jan: "Jan",
+    fév: "Fév",
+    mar: "Mar",
+    avr: "Avr",
+    mai: "Mai",
+    juin: "Juin",
+    juil: "Juil",
+    août: "Août",
+    sept: "Sept",
+    oct: "Oct",
+    nov: "Nov",
+    déc: "Déc",
+  };
+
+  let result = str;
+
+  Object.keys(frenchMonths).forEach((month) => {
+    const regex = new RegExp(`\\b${month}\\b`, "gi");
+    result = result.replace(regex, frenchMonths[month]);
+  });
+
+  return result.charAt(0).toUpperCase() + result.slice(1);
+};
+
 const HISTORICAL_DATA = {
   2014: { price: 378.64, volume: 0.1, marketCap: 5.1 },
   2015: { price: 430.89, volume: 0.15, marketCap: 6.2 },
@@ -114,7 +142,8 @@ export const generatePriceData = (
   days,
   currency = "USD",
   timeframe = "7D",
-  currentPrice = null
+  currentPrice = null,
+  language = "en"
 ) => {
   let dataPoints;
   let intervalMs;
@@ -167,20 +196,30 @@ export const generatePriceData = (
       price = currentPrice;
     }
 
-    const formattedDate =
-      timeframe === "ALL"
-        ? currentTime.getFullYear().toString()
-        : timeframe === "1Y"
-        ? currentTime.toLocaleDateString("en-US", { month: "short" })
-        : timeframe === "1M" || timeframe === "7D"
-        ? currentTime.toLocaleDateString("en-US", {
-            month: "short",
-            day: "numeric",
-          })
-        : currentTime.toLocaleTimeString("en-US", {
-            hour: "2-digit",
-            minute: "2-digit",
-          });
+    const locale = language === "fr" ? "fr-FR" : "en-US";
+    let formattedDate;
+    if (timeframe === "ALL") {
+      formattedDate = currentTime.getFullYear().toString();
+    } else if (timeframe === "1Y") {
+      const monthStr = currentTime.toLocaleDateString(locale, {
+        month: "short",
+      });
+      formattedDate =
+        language === "fr" ? capitalizeFrenchDate(monthStr) : monthStr;
+    } else if (timeframe === "1M" || timeframe === "7D") {
+      const dateStr = currentTime.toLocaleDateString(locale, {
+        month: "short",
+        day: "numeric",
+      });
+      formattedDate =
+        language === "fr" ? capitalizeFrenchDate(dateStr) : dateStr;
+    } else {
+      formattedDate = currentTime.toLocaleTimeString(locale, {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: language !== "fr",
+      });
+    }
 
     data.push({ date: currentTime, price, formattedDate });
   }
@@ -248,22 +287,26 @@ export const generateVolumeData = (
       volume *= weekendFactor * hourlyFactor;
     }
 
-    const day =
-      timeframe === "ALL"
-        ? date.getFullYear().toString()
-        : timeframe === "1Y"
-        ? date.toLocaleDateString(language === "fr" ? "fr-FR" : "en-US", {
-            month: "short",
-          })
-        : timeframe === "1H" || timeframe === "1D"
-        ? date.toLocaleTimeString("en-US", {
-            hour: "2-digit",
-            minute: "2-digit",
-          })
-        : date.toLocaleDateString(language === "fr" ? "fr-FR" : "en-US", {
-            month: "short",
-            day: "numeric",
-          });
+    let day;
+    const locale = language === "fr" ? "fr-FR" : "en-US";
+    if (timeframe === "ALL") {
+      day = date.getFullYear().toString();
+    } else if (timeframe === "1Y") {
+      const monthStr = date.toLocaleDateString(locale, { month: "short" });
+      day = language === "fr" ? capitalizeFrenchDate(monthStr) : monthStr;
+    } else if (timeframe === "1H" || timeframe === "1D") {
+      day = date.toLocaleTimeString(locale, {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: language !== "fr",
+      });
+    } else {
+      const dateStr = date.toLocaleDateString(locale, {
+        month: "short",
+        day: "numeric",
+      });
+      day = language === "fr" ? capitalizeFrenchDate(dateStr) : dateStr;
+    }
 
     data.push({ day, volume });
   }
@@ -323,22 +366,26 @@ export const generateMarketCapData = (
     const date = new Date(startTime.getTime() + i * intervalMs);
     const marketCap = getHistoricalValue(date, "marketCap", currency);
 
-    const day =
-      timeframe === "ALL"
-        ? date.getFullYear().toString()
-        : timeframe === "1Y"
-        ? date.toLocaleDateString(language === "fr" ? "fr-FR" : "en-US", {
-            month: "short",
-          })
-        : timeframe === "1H" || timeframe === "1D"
-        ? date.toLocaleTimeString("en-US", {
-            hour: "2-digit",
-            minute: "2-digit",
-          })
-        : date.toLocaleDateString(language === "fr" ? "fr-FR" : "en-US", {
-            month: "short",
-            day: "numeric",
-          });
+    let day;
+    const locale = language === "fr" ? "fr-FR" : "en-US";
+    if (timeframe === "ALL") {
+      day = date.getFullYear().toString();
+    } else if (timeframe === "1Y") {
+      const monthStr = date.toLocaleDateString(locale, { month: "short" });
+      day = language === "fr" ? capitalizeFrenchDate(monthStr) : monthStr;
+    } else if (timeframe === "1H" || timeframe === "1D") {
+      day = date.toLocaleTimeString(locale, {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: language !== "fr",
+      });
+    } else {
+      const dateStr = date.toLocaleDateString(locale, {
+        month: "short",
+        day: "numeric",
+      });
+      day = language === "fr" ? capitalizeFrenchDate(dateStr) : dateStr;
+    }
 
     data.push({ day, marketCap });
   }

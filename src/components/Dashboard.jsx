@@ -109,7 +109,13 @@ const Dashboard = () => {
 
     if (chartType === "price") {
       setChartData(
-        generatePriceData(days, currency, timeframe, stats.currentPrice)
+        generatePriceData(
+          days,
+          currency,
+          timeframe,
+          stats.currentPrice,
+          i18n.language
+        )
       );
     } else if (chartType === "volume") {
       setChartData(generateVolumeData(currency, i18n.language, timeframe));
@@ -146,9 +152,11 @@ const Dashboard = () => {
   const formatBillion = (value, curr = currency) => {
     if (value >= 1000) {
       const trillions = Math.floor(value / 1000);
-      return `${formatCurrency(trillions, curr)}T`;
+      const suffix = i18n.language === "fr" ? "B" : "T"; // In French, B = trillions, in English, T = trillions
+      return `${formatCurrency(trillions, curr)}${suffix}`;
     }
-    return `${formatCurrency(value, curr)}B`;
+    const suffix = i18n.language === "fr" ? "Md" : "B"; // In French, Md = milliards (billions), in English, B = billions
+    return `${formatCurrency(value, curr)}${suffix}`;
   };
 
   const formatPercentage = (value) => {

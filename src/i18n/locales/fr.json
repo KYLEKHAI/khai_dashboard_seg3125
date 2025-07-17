@@ -9,16 +9,16 @@
   "tradingVolume": "Volume de négociation (7 derniers jours)",
   "marketCapitalization": "Capitalisation boursière (7 derniers jours)",
   "timeframes": {
-    "1H": "1h",
-    "1D": "24h",
-    "7D": "7j",
-    "1M": "1m",
-    "1Y": "1a",
+    "1H": "1H",
+    "1D": "24H",
+    "7D": "7J",
+    "1M": "1M",
+    "1Y": "1A",
     "ALL": "Max"
   },
   "currencies": {
-    "cad": "CAD - Dollar canadien",
-    "usd": "USD - Dollar américain"
+    "cad": "CAD - Dollar Canadien",
+    "usd": "USD - Dollar Américain"
   },
   "chartTypes": {
     "volume": "Volume",
