@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import "./Dashboard.css";
+import MatrixRain from "./MatrixRain";
+
 import {
   Container,
   Typography,
@@ -229,10 +232,12 @@ const Dashboard = () => {
               chartTypes.find((ct) => ct.key === chartType)?.label,
             ]}
             contentStyle={{
-              backgroundColor: "#fff",
-              border: "1px solid #e0e0e0",
-              borderRadius: "8px",
-              boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+              backgroundColor: "rgba(0, 0, 0, 0.9)",
+              border: "1px solid rgba(0, 212, 255, 0.3)",
+              borderRadius: "12px",
+              boxShadow: "0 8px 32px rgba(0, 0, 0, 0.4)",
+              backdropFilter: "blur(10px)",
+              color: "#ffffff",
             }}
           />
           <Area
@@ -276,10 +281,12 @@ const Dashboard = () => {
               chartTypes.find((ct) => ct.key === chartType)?.label,
             ]}
             contentStyle={{
-              backgroundColor: "#fff",
-              border: "1px solid #e0e0e0",
-              borderRadius: "8px",
-              boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+              backgroundColor: "rgba(0, 0, 0, 0.9)",
+              border: "1px solid rgba(0, 212, 255, 0.3)",
+              borderRadius: "12px",
+              boxShadow: "0 8px 32px rgba(0, 0, 0, 0.4)",
+              backdropFilter: "blur(10px)",
+              color: "#ffffff",
             }}
           />
           <Bar dataKey={dataKey} fill={color} radius={[2, 2, 0, 0]} />
@@ -304,367 +311,297 @@ const Dashboard = () => {
   };
 
   return (
-    <Container maxWidth={false} sx={{ py: 2, px: 2, minHeight: "100vh" }}>
-      {/* AI Data Disclaimer */}
-      <Box
-        sx={{
-          position: "absolute",
-          top: 16,
-          left: 16,
-          zIndex: 1000,
-          backgroundColor: "#fff8dc",
-          border: "2px solid #f4d03f",
-          borderRadius: "8px",
-          padding: "12px 16px",
-          maxWidth: "280px",
-          boxShadow: "0 2px 8px rgba(244, 208, 63, 0.15)",
-        }}
-      >
-        <Typography
-          variant="body2"
-          sx={{
-            fontWeight: 600,
-            color: "#b7950b",
-            fontSize: "0.75rem",
-            lineHeight: 1.4,
+    <>
+      <MatrixRain />
+      <Container maxWidth={false} sx={{ py: 2, px: 2, minHeight: "100vh" }}>
+        <Box className="dashboard-disclaimer">
+          <Typography className="dashboard-disclaimer-text">
+            {t("disclaimer.aiGenerated")}
+          </Typography>
+        </Box>
+
+        <Box sx={{ position: "absolute", top: 16, right: 16, zIndex: 1000 }}>
+          <Tooltip title={t("settings")}>
+            <IconButton onClick={handleSettingsOpen} size="large">
+              <SettingsIcon />
+            </IconButton>
+          </Tooltip>
+        </Box>
+
+        <Modal
+          open={settingsOpen}
+          onClose={handleSettingsClose}
+          closeAfterTransition
+          BackdropComponent={Backdrop}
+          BackdropProps={{
+            timeout: 500,
           }}
         >
-          {t("disclaimer.aiGenerated")}
-        </Typography>
-      </Box>
-
-      <Box sx={{ position: "absolute", top: 16, right: 16, zIndex: 1000 }}>
-        <Tooltip title={t("settings")}>
-          <IconButton onClick={handleSettingsOpen} size="large">
-            <SettingsIcon />
-          </IconButton>
-        </Tooltip>
-      </Box>
-
-      <Modal
-        open={settingsOpen}
-        onClose={handleSettingsClose}
-        closeAfterTransition
-        BackdropComponent={Backdrop}
-        BackdropProps={{
-          timeout: 500,
-        }}
-      >
-        <Fade in={settingsOpen}>
-          <Box sx={modalStyle}>
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                mb: 3,
-              }}
-            >
-              <Typography variant="h6" component="h2">
-                {t("settings")}
-              </Typography>
-              <IconButton onClick={handleSettingsClose} size="small">
-                <CloseIcon />
-              </IconButton>
-            </Box>
-
-            <Stack spacing={3}>
-              <FormControl fullWidth>
-                <InputLabel>{t("language")}</InputLabel>
-                <Select
-                  value={i18n.language}
-                  label={t("language")}
-                  onChange={handleLanguageChange}
-                  startAdornment={
-                    <LanguageIcon sx={{ mr: 1, color: "text.secondary" }} />
-                  }
-                >
-                  <MenuItem value="en">{t("languages.en")}</MenuItem>
-                  <MenuItem value="fr">{t("languages.fr")}</MenuItem>
-                </Select>
-              </FormControl>
-
-              <FormControl fullWidth>
-                <InputLabel>{t("currency")}</InputLabel>
-                <Select
-                  value={currency}
-                  onChange={handleCurrencyChange}
-                  label={t("currency")}
-                  startAdornment={
-                    <AttachMoneyIcon sx={{ mr: 1, color: "text.secondary" }} />
-                  }
-                >
-                  <MenuItem value="CAD">{t("currencies.cad")}</MenuItem>
-                  <MenuItem value="USD">{t("currencies.usd")}</MenuItem>
-                </Select>
-              </FormControl>
-            </Stack>
-          </Box>
-        </Fade>
-      </Modal>
-
-      <Box sx={{ mb: 3, textAlign: "center" }}>
-        <Box sx={{ mb: 3 }}>
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: 2,
-              mb: 1,
-            }}
-          >
-            <img
-              src={bitcoinBytesLogo}
-              alt="Bitcoin Bytes Logo"
-              style={{ height: "60px", width: "auto" }}
-            />
-            <Typography variant="h4" component="h1" sx={{ fontWeight: 700 }}>
-              Bitcoin Bytes
-            </Typography>
-          </Box>
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: 2,
-              flexWrap: "wrap",
-            }}
-          >
-            <Typography
-              variant="h3"
-              sx={{ fontWeight: 700, opacity: loading ? 0.6 : 1 }}
-            >
-              {loading
-                ? t("loading") || "Loading..."
-                : formatCurrency(stats.currentPrice)}
-            </Typography>
-            {!loading && (
-              <Chip
-                label={priceChange.value}
+          <Fade in={settingsOpen}>
+            <Box sx={modalStyle} className="dashboard-modal">
+              <Box
                 sx={{
-                  backgroundColor: priceChange.isPositive
-                    ? "#e8f5e8"
-                    : "#ffebee",
-                  color: priceChange.color,
-                  fontWeight: 600,
-                  fontSize: "0.875rem",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  mb: 3,
                 }}
-                icon={
-                  priceChange.isPositive ? (
-                    <TrendingUpIcon sx={{ color: priceChange.color }} />
-                  ) : (
-                    <TrendingDownIcon sx={{ color: priceChange.color }} />
-                  )
-                }
+              >
+                <Typography variant="h6" component="h2">
+                  {t("settings")}
+                </Typography>
+                <IconButton onClick={handleSettingsClose} size="small">
+                  <CloseIcon />
+                </IconButton>
+              </Box>
+
+              <Stack spacing={3}>
+                <FormControl fullWidth>
+                  <InputLabel>{t("language")}</InputLabel>
+                  <Select
+                    value={i18n.language}
+                    label={t("language")}
+                    onChange={handleLanguageChange}
+                    startAdornment={
+                      <LanguageIcon sx={{ mr: 1, color: "text.secondary" }} />
+                    }
+                  >
+                    <MenuItem value="en">{t("languages.en")}</MenuItem>
+                    <MenuItem value="fr">{t("languages.fr")}</MenuItem>
+                  </Select>
+                </FormControl>
+
+                <FormControl fullWidth>
+                  <InputLabel>{t("currency")}</InputLabel>
+                  <Select
+                    value={currency}
+                    onChange={handleCurrencyChange}
+                    label={t("currency")}
+                    startAdornment={
+                      <AttachMoneyIcon
+                        sx={{ mr: 1, color: "text.secondary" }}
+                      />
+                    }
+                  >
+                    <MenuItem value="CAD">{t("currencies.cad")}</MenuItem>
+                    <MenuItem value="USD">{t("currencies.usd")}</MenuItem>
+                  </Select>
+                </FormControl>
+              </Stack>
+            </Box>
+          </Fade>
+        </Modal>
+
+        <Box className="dashboard-header">
+          <Box className="dashboard-logo-section">
+            <Box className="dashboard-title-container">
+              <img
+                src={bitcoinBytesLogo}
+                alt="Bitcoin Bytes Logo"
+                className="dashboard-logo"
               />
-            )}
-          </Box>
-          {!loading && stats.lastUpdated && (
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: 1,
-                mt: 1,
-              }}
-            >
-              <Typography variant="caption" color="text.secondary">
-                {t("lastUpdated")}:{" "}
-                {new Date(stats.lastUpdated).toLocaleTimeString()}
+              <Typography
+                variant="h4"
+                component="h1"
+                className="dashboard-title"
+              >
+                Bitcoin Bytes
               </Typography>
-              {usingFallbackData && (
+            </Box>
+            <Box className="dashboard-price-section">
+              <Typography
+                variant="h5"
+                className={`dashboard-price ${loading ? "loading" : ""}`}
+              >
+                {loading
+                  ? t("loading") || "Loading..."
+                  : formatCurrency(stats.currentPrice)}
+              </Typography>
+              {!loading && (
                 <Chip
-                  label="Simulated Data"
-                  size="small"
+                  label={priceChange.value}
+                  className="dashboard-price-chip"
                   sx={{
-                    fontSize: "0.65rem",
-                    height: "20px",
-                    backgroundColor: "#fff3cd",
-                    color: "#856404",
-                    "& .MuiChip-label": { px: 1 },
+                    backgroundColor: priceChange.isPositive
+                      ? "#e8f5e8"
+                      : "#ffebee",
+                    color: priceChange.color,
                   }}
+                  icon={
+                    priceChange.isPositive ? (
+                      <TrendingUpIcon sx={{ color: priceChange.color }} />
+                    ) : (
+                      <TrendingDownIcon sx={{ color: priceChange.color }} />
+                    )
+                  }
                 />
               )}
             </Box>
-          )}
-        </Box>
-
-        <Grid container spacing={2} sx={{ mb: 3, justifyContent: "center" }}>
-          <Grid item xs={6} sm={3}>
-            <Card
-              sx={{
-                p: 2,
-                backgroundColor: "#fafafa",
-                border: "2px solid #d0d0d0",
-              }}
-            >
-              <Typography variant="body2" color="text.secondary" gutterBottom>
-                {t("marketCap")}
-              </Typography>
-              <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                {formatBillion(stats.marketCap)}
-              </Typography>
-              <Typography variant="caption" color="success.main">
-                +2.34%
-              </Typography>
-            </Card>
-          </Grid>
-
-          <Grid item xs={6} sm={3}>
-            <Card
-              sx={{
-                p: 2,
-                backgroundColor: "#fafafa",
-                border: "2px solid #d0d0d0",
-              }}
-            >
-              <Typography variant="body2" color="text.secondary" gutterBottom>
-                {t("volume24h")}
-              </Typography>
-              <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                {formatBillion(stats.volume24h)}
-              </Typography>
-              <Typography variant="caption" color="text.secondary">
-                Vol / MCap: 0.04
-              </Typography>
-            </Card>
-          </Grid>
-
-          <Grid item xs={6} sm={3}>
-            <Card
-              sx={{
-                p: 2,
-                backgroundColor: "#fafafa",
-                border: "2px solid #d0d0d0",
-              }}
-            >
-              <Typography variant="body2" color="text.secondary" gutterBottom>
-                {t("circulatingSupply")}
-              </Typography>
-              <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                19.89M BTC
-              </Typography>
-              <Typography variant="caption" color="text.secondary">
-                94.7%
-              </Typography>
-            </Card>
-          </Grid>
-
-          <Grid item xs={6} sm={3}>
-            <Card
-              sx={{
-                p: 2,
-                backgroundColor: "#fafafa",
-                border: "2px solid #d0d0d0",
-              }}
-            >
-              <Typography variant="body2" color="text.secondary" gutterBottom>
-                {t("maxSupply")}
-              </Typography>
-              <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                21M BTC
-              </Typography>
-              <Typography variant="caption" color="warning.main">
-                --
-              </Typography>
-            </Card>
-          </Grid>
-        </Grid>
-      </Box>
-
-      <Paper
-        sx={{
-          p: 0,
-          borderRadius: 2,
-          overflow: "hidden",
-          width: "100%",
-          border: "2px solid #d0d0d0",
-        }}
-      >
-        <Box sx={{ p: 3, pb: 0 }}>
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              mb: 2,
-              flexWrap: "wrap",
-              gap: 2,
-            }}
-          >
-            <ButtonGroup variant="text" size="small">
-              {chartTypes.map((type) => (
-                <Button
-                  key={type.key}
-                  onClick={() => setChartType(type.key)}
-                  sx={{
-                    color: chartType === type.key ? "#1976d2" : "#666",
-                    backgroundColor:
-                      chartType === type.key ? "#e3f2fd" : "transparent",
-                    fontWeight: chartType === type.key ? 600 : 400,
-                    px: 2,
-                    py: 1,
-                    minWidth: "auto",
-                  }}
-                  startIcon={type.icon}
-                >
-                  {type.label}
-                </Button>
-              ))}
-            </ButtonGroup>
-
-            <ButtonGroup size="small" variant="outlined">
-              <Button
-                variant={chartStyle === "area" ? "contained" : "outlined"}
-                onClick={() => setChartStyle("area")}
-                size="small"
-              >
-                <ShowChartIcon fontSize="small" />
-              </Button>
-              <Button
-                variant={chartStyle === "bar" ? "contained" : "outlined"}
-                onClick={() => setChartStyle("bar")}
-                size="small"
-              >
-                <BarChartIcon fontSize="small" />
-              </Button>
-            </ButtonGroup>
+            {!loading && stats.lastUpdated && (
+              <Box className="dashboard-last-updated">
+                <Typography variant="caption" color="text.secondary">
+                  {t("lastUpdated")}:{" "}
+                  {new Date(stats.lastUpdated).toLocaleTimeString()}
+                </Typography>
+                {usingFallbackData && (
+                  <Chip
+                    label="Simulated Data"
+                    size="small"
+                    sx={{
+                      fontSize: "0.65rem",
+                      height: "20px",
+                      backgroundColor: "#fff3cd",
+                      color: "#856404",
+                      "& .MuiChip-label": { px: 1 },
+                    }}
+                  />
+                )}
+              </Box>
+            )}
           </Box>
 
-          <Box sx={{ mb: 2 }}>
-            <ButtonGroup variant="text" size="small">
-              {timeframes.map((tf) => (
-                <Button
-                  key={tf.key}
-                  onClick={() => setTimeframe(tf.key)}
-                  sx={{
-                    color: timeframe === tf.key ? "#1976d2" : "#666",
-                    backgroundColor:
-                      timeframe === tf.key ? "#e3f2fd" : "transparent",
-                    fontWeight: timeframe === tf.key ? 600 : 400,
-                    minWidth: 45,
-                    px: 1.5,
-                    py: 0.5,
-                    fontSize: "0.75rem",
-                  }}
-                >
-                  {tf.label}
-                </Button>
-              ))}
-            </ButtonGroup>
-          </Box>
+          <Grid container spacing={2} className="dashboard-stats-grid">
+            <Grid item xs={6} sm={3}>
+              <Card className="dashboard-stat-card">
+                <Typography variant="body2" color="text.secondary" gutterBottom>
+                  {t("marketCap")}
+                </Typography>
+                <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                  {formatBillion(stats.marketCap)}
+                </Typography>
+                <Typography variant="caption" color="success.main">
+                  +2.34%
+                </Typography>
+              </Card>
+            </Grid>
+
+            <Grid item xs={6} sm={3}>
+              <Card className="dashboard-stat-card">
+                <Typography variant="body2" color="text.secondary" gutterBottom>
+                  {t("volume24h")}
+                </Typography>
+                <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                  {formatBillion(stats.volume24h)}
+                </Typography>
+                <Typography variant="caption" color="text.secondary">
+                  Vol / MCap: 0.04
+                </Typography>
+              </Card>
+            </Grid>
+
+            <Grid item xs={6} sm={3}>
+              <Card className="dashboard-stat-card">
+                <Typography variant="body2" color="text.secondary" gutterBottom>
+                  {t("circulatingSupply")}
+                </Typography>
+                <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                  19.89M BTC
+                </Typography>
+                <Typography variant="caption" color="text.secondary">
+                  94.7%
+                </Typography>
+              </Card>
+            </Grid>
+
+            <Grid item xs={6} sm={3}>
+              <Card className="dashboard-stat-card">
+                <Typography variant="body2" color="text.secondary" gutterBottom>
+                  {t("maxSupply")}
+                </Typography>
+                <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                  21M BTC
+                </Typography>
+                <Typography variant="caption" color="warning.main">
+                  --
+                </Typography>
+              </Card>
+            </Grid>
+          </Grid>
         </Box>
 
-        <Box sx={{ height: 600, px: 3, pb: 3, mx: "auto", maxWidth: "85%" }}>
-          <ResponsiveContainer width="100%" height="100%">
-            {renderChart()}
-          </ResponsiveContainer>
+        <Paper className="dashboard-chart-container">
+          <Box className="dashboard-chart-controls">
+            <Box className="dashboard-chart-type-buttons">
+              <ButtonGroup variant="text" size="small">
+                {chartTypes.map((type) => (
+                  <Button
+                    key={type.key}
+                    onClick={() => setChartType(type.key)}
+                    className={
+                      chartType === type.key
+                        ? `dashboard-active-button ${type.key}-button`
+                        : "dashboard-inactive-button"
+                    }
+                    sx={{
+                      px: 2,
+                      py: 1,
+                      minWidth: "auto",
+                    }}
+                    startIcon={type.icon}
+                  >
+                    {type.label}
+                  </Button>
+                ))}
+              </ButtonGroup>
+
+              <ButtonGroup size="small" variant="outlined">
+                <Button
+                  variant={chartStyle === "area" ? "contained" : "outlined"}
+                  onClick={() => setChartStyle("area")}
+                  size="small"
+                >
+                  <ShowChartIcon fontSize="small" />
+                </Button>
+                <Button
+                  variant={chartStyle === "bar" ? "contained" : "outlined"}
+                  onClick={() => setChartStyle("bar")}
+                  size="small"
+                >
+                  <BarChartIcon fontSize="small" />
+                </Button>
+              </ButtonGroup>
+            </Box>
+
+            <Box className="dashboard-timeframe-buttons">
+              <ButtonGroup variant="text" size="small">
+                {timeframes.map((tf) => (
+                  <Button
+                    key={tf.key}
+                    onClick={() => setTimeframe(tf.key)}
+                    className={
+                      timeframe === tf.key
+                        ? "dashboard-active-button timeframe-button"
+                        : "dashboard-inactive-button"
+                    }
+                    sx={{
+                      minWidth: 45,
+                      px: 1.5,
+                      py: 0.5,
+                      fontSize: "0.75rem",
+                    }}
+                  >
+                    {tf.label}
+                  </Button>
+                ))}
+              </ButtonGroup>
+            </Box>
+          </Box>
+
+          <Box className="dashboard-chart-wrapper">
+            <ResponsiveContainer width="100%" height="100%">
+              {renderChart()}
+            </ResponsiveContainer>
+          </Box>
+        </Paper>
+
+        {/* Footer */}
+        <Box className="dashboard-footer">
+          <Typography className="dashboard-footer-text">
+            Created by Kyle Khai Tran 2025
+          </Typography>
         </Box>
-      </Paper>
-    </Container>
+      </Container>
+    </>
   );
 };
 
