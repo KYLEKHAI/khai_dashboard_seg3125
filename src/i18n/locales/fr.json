@@ -47,5 +47,8 @@
   },
   "disclaimer": {
     "aiGenerated": "Avertissement : Toutes les données graphiques sont générées par IA, sauf la section titre du haut qui utilise l'API CoinGecko."
+  },
+  "footer": {
+    "createdBy": "Créé par Kyle Khai Tran 2025"
   }
 }
