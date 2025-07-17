@@ -209,6 +209,7 @@ const Dashboard = () => {
             tick={{ fontSize: 12, fill: "#666" }}
             axisLine={false}
             tickLine={false}
+            interval={timeframe === "1M" ? 4 : "preserveStartEnd"}
           />
           <YAxis
             tick={{ fontSize: 12, fill: "#666" }}
@@ -255,6 +256,7 @@ const Dashboard = () => {
             tick={{ fontSize: 12, fill: "#666" }}
             axisLine={false}
             tickLine={false}
+            interval={timeframe === "1M" ? 4 : "preserveStartEnd"}
           />
           <YAxis
             tick={{ fontSize: 12, fill: "#666" }}
