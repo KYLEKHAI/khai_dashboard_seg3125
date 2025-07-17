@@ -605,7 +605,7 @@ const Dashboard = () => {
         {/* Footer */}
         <Box className="dashboard-footer">
           <Typography className="dashboard-footer-text">
-            Created by Kyle Khai Tran 2025
+            {t("footer.createdBy")}
           </Typography>
         </Box>
       </Container>
